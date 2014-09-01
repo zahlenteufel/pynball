@@ -6,6 +6,8 @@ from finger import left_finger, right_finger
 
 BLACK = (0, 0, 0)
 DARK_GREEN = (128, 255, 0)
+RED = (255, 0, 0)
+YELLOW = (255, 255, 0)
 
 class pynball:
 
@@ -33,10 +35,10 @@ class pynball:
 
 		self.segments = exterior_walls + obstacles
 
-		self.left_finger = left_finger(vector(140, 540), 40, -math.pi / 4, math.pi / 3)
-		self.right_finger = right_finger(vector(260, 540), 40, -math.pi / 4, math.pi / 3)
+		self.left_finger = left_finger(vector(140, 540), 40, -math.pi / 4, math.pi / 3, RED)
+		self.right_finger = right_finger(vector(260, 540), 40, -math.pi / 4, math.pi / 3, YELLOW)
 
-		self.ball = ball(vector(200, 200), 10, vector(0, 0))
+		self.ball = ball(vector(150, 200), 10, vector(0, 0))
 
 		pygame.display.set_caption("Pynball")
 
@@ -69,8 +71,8 @@ class pynball:
 		for segment in self.segments:
 			segment.draw(screen)
 
-		self.left_finger.segment().draw(screen)
-		self.right_finger.segment().draw(screen)
+		self.left_finger.draw(screen)
+		self.right_finger.draw(screen)
 
 		self.ball.draw(screen)
 
