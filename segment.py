@@ -15,7 +15,7 @@ class segment:
 		pygame.draw.line(screen, self.color, (self.p1.x, self.p1.y), (self.p2.x, self.p2.y), 1)
 
 	def normal(self):
-		return Vvctor(-self.ddir.y, self.ddir.x)
+		return vector(-self.ddir.y, self.ddir.x)
 
 	def project(self, point):
 		plength = (point - self.p1) * self.ddir

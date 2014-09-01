@@ -16,9 +16,6 @@ class finger:
 		self.angle = self.min_angle
 		self.max_angle = max_angle
 
-	# def segment(self):
-	# 	return segment(self.pivot, self.pivot + vector_angle(self.angle, self.length), RED)
-
 	def retreat(self):
 		# pass
 		self.angle -= math.pi / 10 # depends on FPS...
