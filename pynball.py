@@ -11,7 +11,7 @@ class pynball:
 
 	WIDTH = 400
 	HEIGHT = 600
-	FPS = 24
+	FPS = 40
 
 	def __init__(self):
 		pygame.init()
@@ -33,10 +33,10 @@ class pynball:
 
 		self.segments = exterior_walls + obstacles
 
-		self.left_finger = left_finger(vector(140, 540), 35, -math.pi / 4, math.pi / 3)
-		self.right_finger = right_finger(vector(260, 540), 35, -math.pi / 4, math.pi / 3)
+		self.left_finger = left_finger(vector(140, 540), 40, -math.pi / 4, math.pi / 3)
+		self.right_finger = right_finger(vector(260, 540), 40, -math.pi / 4, math.pi / 3)
 
-		self.ball = ball(vector(200, 200), 10, vector(-5, -10))
+		self.ball = ball(vector(200, 200), 10, vector(0, 0))
 
 		pygame.display.set_caption("Pynball")
 
@@ -76,17 +76,17 @@ class pynball:
 
 	def game_loop(self):
 		while True:
-
 			self.process_events()
 
-			self.ball.apply_gravity()
-			self.left_finger.retreat()
-			self.right_finger.retreat()
+			for i in xrange(10):
+				self.ball.apply_gravity()
+				self.left_finger.update_move()
+				self.right_finger.update_move()
 
-			self.ball.apply_colissions(
-				self.segments + [
-				self.left_finger.segment(),
-				self.right_finger.segment()])
+				self.ball.apply_colissions(
+					self.segments + [
+					self.left_finger.segment(),
+					self.right_finger.segment()])
 
 			self.draw(self.screen)
 			pygame.display.flip()
