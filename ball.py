@@ -11,7 +11,7 @@ class ball:
 	MIDDLE = 0
 	BORDER = 1
 
-	GRAVITY_ACC = 0.2
+	GRAVITY_ACC = 0.01
 
 	def __init__(self, center, radius, velocity):
 		self.center = center

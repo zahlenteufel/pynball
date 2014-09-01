@@ -18,6 +18,12 @@ class vector:
 		else:
 			return vector(self.x * other, self.y * other)
 
+	def int(self):
+		return vector(int(self.x), int(self.y))
+
+	def to_tuple(self):
+		return self.x, self.y
+
 	def horizontal_mirror(self):
 		return vector(-self.x, self.y)
 
