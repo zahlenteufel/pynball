@@ -29,18 +29,20 @@ class finger:
     def release(self):
         self.triggered = False
 
-    def segments(self):
+    def upper_segment(self):
         angle1 = self.perpendicular_angle()
-        angle2 = angle1 + math.pi
-        ext11 = self.pivot + self.angular_vector(angle1, 8)
-        ext12 = self.pivot + self.angular_vector(angle2, 8)
-        extreme = self.extreme()
-        ext21 = extreme + self.angular_vector(angle1, 5)
-        ext22 = extreme + self.angular_vector(angle2, 5)
-        return [segment(ext11, ext21, self.color), segment(ext12, ext22, self.color)]
-    
-    def segment(self):
-        return segment(self.pivot, self.extreme(), self.color)
+        pivot_upper = self.pivot + self.angular_vector(angle1, 8)
+        extreme_upper = self.extreme() + self.angular_vector(angle1, 5)
+        return segment(pivot_upper, extreme_upper, self.color)
+
+    def lower_segment(self):
+        angle2 = self.perpendicular_angle() + math.pi
+        pivot_lower = self.pivot + self.angular_vector(angle2, 8)
+        extreme_lower = self.extreme() + self.angular_vector(angle2, 5)
+        return segment(pivot_lower, extreme_lower, self.color)
+
+    def segments(self):
+        return [self.upper_segment(), self.lower_segment()]
 
     def extreme(self):
         return self.pivot + self.angular_vector(self.angle, self.length)
