@@ -35,20 +35,14 @@ class pynball:
 
 		self.segments = exterior_walls + obstacles
 
-		self.left_finger = left_finger(vector(140, 540), 40, -math.pi / 4, math.pi / 3, RED)
-		self.right_finger = right_finger(vector(260, 540), 40, -math.pi / 4, math.pi / 3, YELLOW)
+		self.left_finger = left_finger(vector(140, 540), 40, -math.pi / 4, math.pi / 4, RED)
+		self.right_finger = right_finger(vector(260, 540), 40, -math.pi / 4, math.pi / 4, YELLOW)
 
 		self.ball = ball(vector(150, 200), 10, vector(0, 0))
 
 		pygame.display.set_caption("Pynball")
 
 		self.game_loop()
-
-	def left(self):
-		self.left_finger.trigger()
-
-	def right(self):
-		self.right_finger.trigger()
 
 	def process_events(self):
 		for event in pygame.event.get():
@@ -58,9 +52,14 @@ class pynball:
 				sys.exit()
 			elif event.type == pygame.KEYDOWN:
 				if event.key == pygame.K_z:
-					self.left()
+					self.left_finger.push()
 				elif event.key == pygame.K_m:
-					self.right()
+					self.right_finger.push()
+			elif event.type == pygame.KEYUP:
+				if event.key == pygame.K_z:
+					self.left_finger.release()
+				elif event.key == pygame.K_m:
+					self.right_finger.release()
 			elif event.type == pygame.MOUSEBUTTONDOWN:
 				pos = pygame.mouse.get_pos()
 				self.ball.center = vector(pos[0], pos[1])

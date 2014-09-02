@@ -18,17 +18,19 @@ class finger:
             self.angle += math.pi / 100
             if self.angle > self.max_angle:
                 self.angle = self.max_angle
-                self.triggered = False
         else:
             self.angle -= math.pi / 200
             if self.angle < self.min_angle:
                 self.angle = self.min_angle
 
-    def trigger(self):
+    def push(self):
         self.triggered = True
 
-    def segments(self):
-        return segment(self.pivot, self.extreme(), self.color)
+    def release(self):
+        self.triggered = False
+
+    # def segments(self):
+    #     return segment(self.pivot, self.extreme(), self.color)
     
     def segment(self):
         return segment(self.pivot, self.extreme(), self.color)
