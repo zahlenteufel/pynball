@@ -29,8 +29,15 @@ class finger:
     def release(self):
         self.triggered = False
 
-    # def segments(self):
-    #     return segment(self.pivot, self.extreme(), self.color)
+    def segments(self):
+        angle1 = self.perpendicular_angle()
+        angle2 = angle1 + math.pi
+        ext11 = self.pivot + self.angular_vector(angle1, 8)
+        ext12 = self.pivot + self.angular_vector(angle2, 8)
+        extreme = self.extreme()
+        ext21 = extreme + self.angular_vector(angle1, 5)
+        ext22 = extreme + self.angular_vector(angle2, 5)
+        return [segment(ext11, ext21, self.color), segment(ext12, ext22, self.color)]
     
     def segment(self):
         return segment(self.pivot, self.extreme(), self.color)
@@ -42,18 +49,10 @@ class finger:
         return self.angle + math.pi / 2
 
     def draw(self, screen):
-        self.segment().draw(screen)
+        for segment in self.segments():
+            segment.draw(screen)
         pygame.draw.circle(screen, self.color, (self.pivot.x, self.pivot.y), 8)
-        extreme = self.extreme().int()
-        pygame.draw.circle(screen, self.color, (extreme.x, extreme.y), 5)
-        angle1 = self.perpendicular_angle()
-        angle2 = angle1 + math.pi
-        ext11 = self.pivot + self.angular_vector(angle1, 8)
-        ext12 = self.pivot + self.angular_vector(angle2, 8)
-        ext21 = extreme + self.angular_vector(angle1, 5)
-        ext22 = extreme + self.angular_vector(angle2, 5)
-        pygame.draw.line(screen, self.color, ext11.to_tuple(), ext21.to_tuple())
-        pygame.draw.line(screen, self.color, ext12.to_tuple(), ext22.to_tuple())
+        pygame.draw.circle(screen, self.color, self.extreme().int().tuple(), 5)
 
 
 class left_finger(finger):

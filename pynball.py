@@ -83,11 +83,7 @@ class pynball:
 				self.ball.apply_gravity()
 				self.left_finger.update_move()
 				self.right_finger.update_move()
-
-				self.ball.apply_colissions(
-					self.segments + [
-					self.left_finger.segment(),
-					self.right_finger.segment()])
+				self.ball.apply_colissions(self.segments + self.left_finger.segments() + self.right_finger.segments())
 
 			self.draw(self.screen)
 			pygame.display.flip()

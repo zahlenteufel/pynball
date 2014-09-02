@@ -24,7 +24,7 @@ class vector:
 	def int(self):
 		return vector(int(self.x), int(self.y))
 
-	def to_tuple(self):
+	def tuple(self):
 		return self.x, self.y
 
 	def horizontal_mirror(self):
