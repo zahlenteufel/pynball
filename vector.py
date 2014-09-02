@@ -1,5 +1,8 @@
 import math
 
+def distance(v1, v2):
+	return (v1 - v2).length()
+
 class vector:
 
 	def __init__(self, x, y):

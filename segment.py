@@ -17,8 +17,11 @@ class segment:
 	def normal(self):
 		return vector(-self.ddir.y, self.ddir.x)
 
+	def projected_length(self, point):
+		return (point - self.p1) * self.ddir
+
 	def project(self, point):
-		plength = (point - self.p1) * self.ddir
+		plength = self.projected_length(point)
 		if 0 <= plength <= self.dlength:
 			return self.p1 + vector(plength * self.ddir.x, plength * self.ddir.y)
 		else:

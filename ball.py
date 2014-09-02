@@ -1,8 +1,5 @@
 import pygame
-from vector import vector
-
-def dist(p1, p2):
-	return (p1 - p2).length()
+from vector import vector, distance
 
 ballimg = pygame.image.load('ball.png')
 
@@ -21,11 +18,11 @@ class ball:
 	def intersection(self, segment):
 		p = segment.project(self.center)
 		if p is not None:
-			return self.MIDDLE, dist(p, self.center) <= self.radius
+			return self.MIDDLE, distance(p, self.center) <= self.radius
 		else:
-			if dist(segment.p1, self.center) <= self.radius:
+			if distance(segment.p1, self.center) <= self.radius:
 				return self.BORDER, segment.p1
-			if dist(segment.p2, self.center) <= self.radius:
+			if distance(segment.p2, self.center) <= self.radius:
 				return self.BORDER, segment.p2
 
 	def draw(self, screen):
