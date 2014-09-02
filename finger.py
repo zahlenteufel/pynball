@@ -1,6 +1,8 @@
 from vector import vector
 from segment import segment
-import math, pygame
+from draw import draw_circle
+import math
+
 
 class finger:
 
@@ -53,8 +55,8 @@ class finger:
     def draw(self, screen):
         for segment in self.segments():
             segment.draw(screen)
-        pygame.draw.circle(screen, self.color, (self.pivot.x, self.pivot.y), 8)
-        pygame.draw.circle(screen, self.color, self.extreme().int().tuple(), 5)
+        draw_circle(screen, self.color, self.pivot, 8)
+        draw_circle(screen, self.color, self.extreme(), 5)
 
 
 class left_finger(finger):
@@ -62,7 +64,9 @@ class left_finger(finger):
     def angular_vector(self, angle, length):
         return vector(math.cos(angle), -math.sin(angle)) * length
 
+
 class right_finger(finger):
 
     def angular_vector(self, angle, length):
-        return (vector(math.cos(angle), -math.sin(angle)) * length).horizontal_mirror()
+        angular_vector = vector(math.cos(angle), -math.sin(angle)) * length
+        return angular_vector.horizontal_mirror()

@@ -1,4 +1,6 @@
-import pygame, sys, math, time
+import pygame
+import sys
+import math
 from vector import vector
 from segment import segment
 from ball import ball
@@ -9,87 +11,110 @@ DARK_GREEN = (128, 255, 0)
 RED = (255, 0, 0)
 YELLOW = (255, 255, 0)
 
+
+def segments_from_rectangle(x, y, w, h, color):
+    corners = \
+        [
+            vector(x, y),
+            vector(x + w, y),
+            vector(x + w, y + h),
+            vector(x, y + h)
+        ]
+    return [
+        segment(corners[0], corners[1], color),
+        segment(corners[1], corners[2], color),
+        segment(corners[2], corners[3], color),
+        segment(corners[3], corners[0], color)
+    ]
+
+
 class pynball:
 
-	WIDTH = 400
-	HEIGHT = 600
-	FPS = 40
+    WIDTH = 400
+    HEIGHT = 600
+    FPS = 40
 
-	def __init__(self):
-		pygame.init()
+    def __init__(self):
+        pygame.init()
 
-		self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT), 0, 32)
-		self.clock = pygame.time.Clock()
+        self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT), 0, 32)
+        self.clock = pygame.time.Clock()
 
-		exterior_walls = [
-			segment(vector(-1, -1), vector(-1, self.HEIGHT), DARK_GREEN),
-			segment(vector(-1, -1), vector(self.WIDTH, -1), DARK_GREEN),
-			segment(vector(self.WIDTH, -1), vector(self.WIDTH, self.HEIGHT), DARK_GREEN),
-			segment(vector(self.WIDTH, self.HEIGHT), vector(-1, self.HEIGHT), DARK_GREEN)
-			]
+        exterior_walls = segments_from_rectangle(
+            -1, -1, self.WIDTH + 2, self.HEIGHT + 2, DARK_GREEN)
 
-		obstacles = [
-			segment(vector(50, 450), vector(140, 530), DARK_GREEN),
-			segment(vector(260, 530), vector(320, 475), DARK_GREEN)
-			]
+        obstacles = \
+            [
+                segment(vector(50, 450), vector(140, 530), DARK_GREEN),
+                segment(vector(260, 530), vector(320, 475), DARK_GREEN)
+            ]
 
-		self.segments = exterior_walls + obstacles
+        self.segments = exterior_walls + obstacles
 
-		self.left_finger = left_finger(vector(140, 540), 40, -math.pi / 4, math.pi / 4, RED)
-		self.right_finger = right_finger(vector(260, 540), 40, -math.pi / 4, math.pi / 4, YELLOW)
+        self.left_finger = left_finger(
+            vector(140, 540), 40, -math.pi / 4, math.pi / 4, RED)
 
-		self.ball = ball(vector(150, 200), 10, vector(0, 0))
+        self.right_finger = right_finger(
+            vector(260, 540), 40, -math.pi / 4, math.pi / 4, YELLOW)
 
-		pygame.display.set_caption("Pynball")
+        self.ball = ball(vector(150, 200), 10, vector(0, 0))
 
-		self.game_loop()
+        pygame.display.set_caption("Pynball")
 
-	def process_events(self):
-		for event in pygame.event.get():
-			if event.type == pygame.QUIT or \
-				event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-				pygame.quit()
-				sys.exit()
-			elif event.type == pygame.KEYDOWN:
-				if event.key == pygame.K_z:
-					self.left_finger.push()
-				elif event.key == pygame.K_m:
-					self.right_finger.push()
-			elif event.type == pygame.KEYUP:
-				if event.key == pygame.K_z:
-					self.left_finger.release()
-				elif event.key == pygame.K_m:
-					self.right_finger.release()
-			elif event.type == pygame.MOUSEBUTTONDOWN:
-				pos = pygame.mouse.get_pos()
-				self.ball.center = vector(pos[0], pos[1])
+        self.game_loop()
 
-	def draw(self, screen):
-		screen.fill(BLACK)
+    def should_quit(self, event):
+        return event.type == pygame.QUIT or \
+            event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE
 
-		for segment in self.segments:
-			segment.draw(screen)
+    def process_events(self):
+        for event in pygame.event.get():
+            if self.should_quit(event):
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_z:
+                    self.left_finger.push()
+                elif event.key == pygame.K_m:
+                    self.right_finger.push()
+            elif event.type == pygame.KEYUP:
+                if event.key == pygame.K_z:
+                    self.left_finger.release()
+                elif event.key == pygame.K_m:
+                    self.right_finger.release()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                pos = pygame.mouse.get_pos()
+                self.ball.center = vector(pos[0], pos[1])
 
-		self.left_finger.draw(screen)
-		self.right_finger.draw(screen)
+    def draw(self, screen):
+        screen.fill(BLACK)
 
-		self.ball.draw(screen)
+        for segment in self.segments:
+            segment.draw(screen)
 
-	def game_loop(self):
-		while True:
-			self.process_events()
+        self.left_finger.draw(screen)
+        self.right_finger.draw(screen)
 
-			for i in xrange(10):
-				self.ball.apply_gravity()
-				self.left_finger.update_move()
-				self.right_finger.update_move()
-				self.ball.apply_colissions(self.segments + self.left_finger.segments() + self.right_finger.segments())
+        self.ball.draw(screen)
 
-			self.draw(self.screen)
-			pygame.display.flip()
+    def game_loop(self):
+        while True:
+            self.process_events()
 
-			self.clock.tick(self.FPS)
+            for i in xrange(10):
+                self.ball.apply_gravity()
+                self.left_finger.update_move()
+                self.right_finger.update_move()
+                self.ball.apply_colissions(
+                    self.segments +
+                    self.left_finger.segments() +
+                    self.right_finger.segments())
+
+            self.draw(self.screen)
+            pygame.display.flip()
+
+            self.clock.tick(self.FPS)
 
 
 if __name__ == "__main__":
-	pynball = pynball()
+    pynball = pynball()
