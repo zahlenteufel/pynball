@@ -36,7 +36,7 @@ class finger:
     def extreme(self):
         return self.pivot + self.angular_vector(self.angle, self.length)
 
-    def ang1(self):
+    def perpendicular_angle(self):
         return self.angle + math.pi / 2
 
     def draw(self, screen):
@@ -44,13 +44,13 @@ class finger:
         pygame.draw.circle(screen, self.color, (self.pivot.x, self.pivot.y), 8)
         extreme = self.extreme().int()
         pygame.draw.circle(screen, self.color, (extreme.x, extreme.y), 5)
-        angle1 = self.ang1()
+        angle1 = self.perpendicular_angle()
         angle2 = angle1 + math.pi
         ext11 = self.pivot + self.angular_vector(angle1, 8)
         ext12 = self.pivot + self.angular_vector(angle2, 8)
         ext21 = extreme + self.angular_vector(angle1, 5)
         ext22 = extreme + self.angular_vector(angle2, 5)
-        pygame.draw.line(screen, (255,0,255), ext11.to_tuple(), ext21.to_tuple())
+        pygame.draw.line(screen, self.color, ext11.to_tuple(), ext21.to_tuple())
         pygame.draw.line(screen, self.color, ext12.to_tuple(), ext22.to_tuple())
 
 
