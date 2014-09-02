@@ -17,6 +17,18 @@ class segment:
 	def normal(self):
 		return vector(-self.ddir.y, self.ddir.x)
 
+	def closest_point(self, point):
+		plength = self.projected_length(point)
+		if plength <= 0:
+			return self.p1
+		elif plength >= self.dlength:
+			return self.p2
+		else:
+			return self.p1 + vector(plength * self.ddir.x, plength * self.ddir.y)
+
+	def is_extreme(self, point):
+		return point == self.p1 or point == self.p2
+
 	def projected_length(self, point):
 		return (point - self.p1) * self.ddir
 

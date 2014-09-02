@@ -16,14 +16,23 @@ class ball:
 		self.velocity = velocity
 
 	def intersection(self, segment):
-		p = segment.project(self.center)
-		if p is not None:
-			return self.MIDDLE, distance(p, self.center) <= self.radius
+		closest_point = segment.closest_point(self.center)
+		if distance(closest_point, self.center) <= self.radius:
+			return closest_point
 		else:
-			if distance(segment.p1, self.center) <= self.radius:
-				return self.BORDER, segment.p1
-			if distance(segment.p2, self.center) <= self.radius:
-				return self.BORDER, segment.p2
+			return None
+		# plength = segment.project_length(self.center)
+		# if plength <= 0:
+		# 	return self.BORDER, segment.p1
+		# elif plength >
+
+		# if p is not None:
+		# 	return self.MIDDLE, distance(p, self.center) <= self.radius
+		# else:
+		# 	if distance(segment.p1, self.center) <= self.radius:
+		# 		return self.BORDER, segment.p1
+		# 	if distance(segment.p2, self.center) <= self.radius:
+		# 		return self.BORDER, segment.p2
 
 	def draw(self, screen):
 		screen.blit(ballimg, (self.center.x - self.radius, self.center.y - self.radius))
@@ -34,14 +43,13 @@ class ball:
 	def apply_colissions(self, segments):
 		self.center += self.velocity
 		for segment in segments:
-			collision = self.intersection(segment)
-			if collision is not None and collision[1]:
+			collision_point = self.intersection(segment)
+			if collision_point:
 				self.center -= self.velocity # undo move
-				if collision[0] == self.MIDDLE:
+				if segment.is_extreme(collision_point):
 					self.velocity = segment.ddir.reflect(self.velocity)
 				else:
-					p = collision[1]
-					ort = (p - self.center).normalized()
-					ort.x, ort.y = -ort.y, ort.x
-					self.velocity = ort.reflect(self.velocity)
+					orthogonal = (collision_point - self.center).normalized()
+					orthogonal.x, orthogonal.y = -orthogonal.y, orthogonal.x
+					self.velocity = orthogonal.reflect(self.velocity)
 				self.velocity = self.velocity * 0.7
