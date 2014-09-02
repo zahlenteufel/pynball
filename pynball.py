@@ -29,8 +29,8 @@ class pynball:
 			]
 
 		obstacles = [
-			segment(vector(50, 460), vector(140, 540), DARK_GREEN),
-			segment(vector(260, 540), vector(320, 485), DARK_GREEN)
+			segment(vector(50, 450), vector(140, 530), DARK_GREEN),
+			segment(vector(260, 530), vector(320, 475), DARK_GREEN)
 			]
 
 		self.segments = exterior_walls + obstacles
