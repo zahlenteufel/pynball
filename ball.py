@@ -1,8 +1,8 @@
-from vector import vector, distance
+from vector import Vector, distance
 from draw import draw_circle
 
 
-class ball:
+class Ball:
 
     GRAVITY_ACC = 0.01
 
@@ -22,7 +22,7 @@ class ball:
         draw_circle(screen, (255, 255, 255), self.center, self.radius)
 
     def apply_gravity(self):
-        self.velocity += vector(0, self.GRAVITY_ACC)
+        self.velocity += Vector(0, self.GRAVITY_ACC)
 
     def apply_colissions(self, segments):
         self.center += self.velocity

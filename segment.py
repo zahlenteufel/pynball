@@ -1,8 +1,8 @@
 import pygame
-from vector import vector
+from vector import Vector
 
 
-class segment:
+class Segment:
 
     def __init__(self, p1, p2, color):
         self.p1 = p1
@@ -20,7 +20,7 @@ class segment:
             self.p2.tuple(), 1)
 
     def normal(self):
-        return vector(-self.ddir.y, self.ddir.x)
+        return Vector(-self.ddir.y, self.ddir.x)
 
     def closest_point(self, point):
         plength = self.projected_length(point)

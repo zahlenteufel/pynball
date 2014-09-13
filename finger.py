@@ -1,10 +1,10 @@
-from vector import vector
-from segment import segment
+from vector import Vector
+from segment import Segment
 from draw import draw_circle
 import math
 
 
-class finger:
+class Finger:
 
     def __init__(self, pivot, length, min_angle, max_angle, color):
         self.pivot = pivot
@@ -35,13 +35,13 @@ class finger:
         angle1 = self.perpendicular_angle()
         pivot_upper = self.pivot + self.angular_vector(angle1, 8)
         extreme_upper = self.extreme() + self.angular_vector(angle1, 5)
-        return segment(pivot_upper, extreme_upper, self.color)
+        return Segment(pivot_upper, extreme_upper, self.color)
 
     def lower_segment(self):
         angle2 = self.perpendicular_angle() + math.pi
         pivot_lower = self.pivot + self.angular_vector(angle2, 8)
         extreme_lower = self.extreme() + self.angular_vector(angle2, 5)
-        return segment(pivot_lower, extreme_lower, self.color)
+        return Segment(pivot_lower, extreme_lower, self.color)
 
     def segments(self):
         return [self.upper_segment(), self.lower_segment()]
@@ -59,14 +59,14 @@ class finger:
         draw_circle(screen, self.color, self.extreme(), 5)
 
 
-class left_finger(finger):
+class LeftFinger(Finger):
 
     def angular_vector(self, angle, length):
-        return vector(math.cos(angle), -math.sin(angle)) * length
+        return Vector(math.cos(angle), -math.sin(angle)) * length
 
 
-class right_finger(finger):
+class RightFinger(Finger):
 
     def angular_vector(self, angle, length):
-        angular_vector = vector(math.cos(angle), -math.sin(angle)) * length
+        angular_vector = Vector(math.cos(angle), -math.sin(angle)) * length
         return angular_vector.horizontal_mirror()

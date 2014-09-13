@@ -1,10 +1,10 @@
 import pygame
 import sys
 import math
-from vector import vector
-from segment import segment
-from ball import ball
-from finger import left_finger, right_finger
+from vector import Vector
+from segment import Segment
+from ball import Ball
+from finger import LeftFinger, RightFinger
 
 BLACK = (0, 0, 0)
 DARK_GREEN = (128, 255, 0)
@@ -15,20 +15,20 @@ YELLOW = (255, 255, 0)
 def segments_from_rectangle(x, y, w, h, color):
     corners = \
         [
-            vector(x, y),
-            vector(x + w, y),
-            vector(x + w, y + h),
-            vector(x, y + h)
+            Vector(x, y),
+            Vector(x + w, y),
+            Vector(x + w, y + h),
+            Vector(x, y + h)
         ]
     return [
-        segment(corners[0], corners[1], color),
-        segment(corners[1], corners[2], color),
-        segment(corners[2], corners[3], color),
-        segment(corners[3], corners[0], color)
+        Segment(corners[0], corners[1], color),
+        Segment(corners[1], corners[2], color),
+        Segment(corners[2], corners[3], color),
+        Segment(corners[3], corners[0], color)
     ]
 
 
-class pynball:
+class Pynball:
 
     WIDTH = 400
     HEIGHT = 600
@@ -45,19 +45,19 @@ class pynball:
 
         obstacles = \
             [
-                segment(vector(50, 450), vector(140, 530), DARK_GREEN),
-                segment(vector(260, 530), vector(320, 475), DARK_GREEN)
+                Segment(Vector(50, 450), Vector(140, 530), DARK_GREEN),
+                Segment(Vector(260, 530), Vector(320, 475), DARK_GREEN)
             ]
 
         self.segments = exterior_walls + obstacles
 
-        self.left_finger = left_finger(
-            vector(140, 540), 40, -math.pi / 4, math.pi / 4, RED)
+        self.left_finger = LeftFinger(
+            Vector(140, 540), 40, -math.pi / 4, math.pi / 4, RED)
 
-        self.right_finger = right_finger(
-            vector(260, 540), 40, -math.pi / 4, math.pi / 4, YELLOW)
+        self.right_finger = RightFinger(
+            Vector(260, 540), 40, -math.pi / 4, math.pi / 4, YELLOW)
 
-        self.ball = ball(vector(150, 200), 10, vector(0, 0))
+        self.ball = Ball(Vector(150, 200), 10, Vector(0, 0))
 
         pygame.display.set_caption("Pynball")
 
@@ -84,7 +84,7 @@ class pynball:
                     self.right_finger.release()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 pos = pygame.mouse.get_pos()
-                self.ball.center = vector(pos[0], pos[1])
+                self.ball.center = Vector(pos[0], pos[1])
 
     def draw(self, screen):
         screen.fill(BLACK)
@@ -117,4 +117,4 @@ class pynball:
 
 
 if __name__ == "__main__":
-    pynball = pynball()
+    pynball = Pynball()
