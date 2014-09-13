@@ -97,19 +97,20 @@ class Pynball:
 
         self.ball.draw(screen)
 
+    def simulate_physics(self):
+        for i in xrange(10):
+            self.ball.apply_gravity()
+            self.left_finger.update_move()
+            self.right_finger.update_move()
+            self.ball.apply_colissions(
+                self.segments +
+                self.left_finger.segments() +
+                self.right_finger.segments())
+
     def game_loop(self):
         while True:
             self.process_events()
-
-            for i in xrange(10):
-                self.ball.apply_gravity()
-                self.left_finger.update_move()
-                self.right_finger.update_move()
-                self.ball.apply_colissions(
-                    self.segments +
-                    self.left_finger.segments() +
-                    self.right_finger.segments())
-
+            self.simulate_physics()
             self.draw(self.screen)
             pygame.display.flip()
 
