@@ -29,9 +29,6 @@ class Vector:
     def tuple(self):
         return self.x, self.y
 
-    def horizontal_mirror(self):
-        return Vector(-self.x, self.y)
-
     def length(self):
         return math.hypot(self.x, self.y)
 

@@ -1,7 +1,8 @@
 from vector import Vector, distance
 from draw import draw_circle
 
-GRAVITY_ACC = Vector(0, 0.002)
+GRAVITY_ACC = Vector(0, 0)
+#Vector(0, 0.002)
 
 
 class Ball:

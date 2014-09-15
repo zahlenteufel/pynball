@@ -21,27 +21,39 @@ class Finger:
         self.angular_velocity = 0
 
     def angle_at(self, t):
-        angle = self.angle + self.angular_velocity
+        angle = self.angle + self.angular_velocity * t
         return clamp(angle, self.min_angle, self.max_angle)
 
     def at(self, t):
         angle = self.angle_at(t)
-        res = copy.copy(self)
+        res = copy.deepcopy(self)
         res.angle = angle
         if res.angle in (self.min_angle, self.max_angle):
             res.angular_velocity = 0
         return res
 
     def impact_on(self, ball):
-        newball = copy.copy(ball)
+        newball = copy.deepcopy(ball)
         mysegm = (self.extreme() - self.pivot)
         distance_to_pivot = mysegm.projected_length(ball.center)
         # assume touched upper segment
-        upseg = self.upper_segment()
+        if self.collides_with_upper_segment(ball):
+            normal = self.upper_segment().direction.normal()
+        elif self.collides_with_lower_segment(ball):
+            normal = self.lower_segment().direction.normal()
+        elif self.collides_with_extreme(ball):
+            normal = (ball.center - self.extreme()).normalized()
+        elif self.collides_with_pivot(ball):
+            normal = (ball.center - self.pivot).normalized()
+        else:
+            assert(False)
+
+        ref = normal.normal()
+
         newball.velocity = \
-            upseg.direction.reflect(newball.velocity) * 0.8 + \
-            upseg.direction.normal() * self.angular_velocity * \
-            distance_to_pivot * 0.5
+            ref.reflect(newball.velocity) * 0.8 + \
+            normal * self.angular_velocity * distance_to_pivot * 0.8
+
         # if ball is moving against finger...
 
         return newball
@@ -79,17 +91,24 @@ class Finger:
         draw_circle(screen, self.color, self.pivot, 8)
         draw_circle(screen, self.color, self.extreme(), 5)
 
+    def collides_with_pivot(self, ball):
+        return (ball.center - self.pivot).length() < ball.radius + 8
+
+    def collides_with_extreme(self, ball):
+        return (ball.center - self.extreme()).length() < ball.radius + 8
+
+    def collides_with_lower_segment(self, ball):
+        return ball.collides_segment(self.lower_segment())
+
+    def collides_with_upper_segment(self, ball):
+        return ball.collides_segment(self.upper_segment())
+
     def collides(self, ball):
-        d1 = (ball.center - self.pivot).length()
-        d2 = (ball.center - self.extreme()).length()
-        if d1 <= ball.radius + 8:
-            return True
-        if d2 <= ball.radius + 5:
-            return True
-        for segment in self.segments():
-            if ball.collides_segment(segment):
-                return True
-        return False
+        return \
+            self.collides_with_pivot(ball) or \
+            self.collides_with_extreme(ball) or \
+            self.collides_with_upper_segment(ball) or \
+            self.collides_with_lower_segment(ball)
 
     # def is_ball_inside(self, ball):
     #     upseg = self.upper_segment()
@@ -108,5 +127,4 @@ class LeftFinger(Finger):
 class RightFinger(Finger):
 
     def angular_vector(self, angle, length):
-        angular_vector = Vector(math.cos(angle), -math.sin(angle)) * length
-        return angular_vector.horizontal_mirror()
+        return Vector(-math.cos(angle), -math.sin(angle)) * length

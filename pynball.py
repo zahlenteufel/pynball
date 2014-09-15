@@ -57,7 +57,7 @@ class Pynball:
         self.right_finger = RightFinger(
             Vector(260, 540), 40, -math.pi / 4, math.pi / 4, YELLOW)
 
-        self.ball = Ball(Vector(150, 450), 10, Vector(0, 0))
+        self.ball = Ball(Vector(160, 520), 10, Vector(0, 0))
 
         pygame.display.set_caption("Pynball")
 
@@ -98,12 +98,14 @@ class Pynball:
         self.ball.draw(self.screen)
 
     def get_collision_time(self, ball, finger, t):
+        if self.left_finger.collides(self.ball):
+            return 0
         t0 = 0
         t1 = t
         ball0 = ball
         finger0 = finger
         while t1 - t0 > 0.0001:
-            ## at t0 => not collidingzz
+            ## at t0 => not colliding
             ## at t1 => colliding
             mid = (t0 + t1) / 2
             ball = ball0.at(mid)
@@ -112,7 +114,9 @@ class Pynball:
                 t1 = mid
             else:
                 t0 = mid
-        return mid
+        assert(not finger0.at(t0).collides(ball0.at(t0)))
+        assert(finger0.at(t1).collides(ball0.at(t1)))
+        return t1
 
     def simulate_physics(self):
         dt = 1.0
@@ -122,6 +126,7 @@ class Pynball:
             lfingernext = self.left_finger.at(dt)
             #
             if lfingernext.collides(ball_next):
+                # print "begin collision"
                 collision_time = self.get_collision_time(
                     self.ball, self.left_finger, dt)
                 ball_next = self.ball.at(collision_time)
@@ -129,6 +134,7 @@ class Pynball:
                 ball_next = lfingercollision.impact_on(ball_next)
                 ball_next = ball_next.at(dt - collision_time)
                 lfingernext = self.left_finger.at(dt)
+                # print "end collision"
 
             self.left_finger = lfingernext
             self.ball = ball_next
