@@ -57,7 +57,7 @@ class Pynball:
         self.right_finger = RightFinger(
             Vector(260, 540), 40, -math.pi / 4, math.pi / 4, YELLOW)
 
-        self.ball = Ball(Vector(150, 200), 10, Vector(0, 0))
+        self.ball = Ball(Vector(150, 450), 10, Vector(0, 0))
 
         pygame.display.set_caption("Pynball")
 
@@ -84,34 +84,60 @@ class Pynball:
                     self.right_finger.release()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 pos = pygame.mouse.get_pos()
-                self.ball.center = Vector(pos[0], pos[1])
+                self.ball.center = Vector(*pos)
 
-    def draw(self, screen):
-        screen.fill(BLACK)
+    def draw(self):
+        self.screen.fill(BLACK)
 
         for segment in self.segments:
-            segment.draw(screen)
+            segment.draw(self.screen)
 
-        self.left_finger.draw(screen)
-        self.right_finger.draw(screen)
+        self.left_finger.draw(self.screen)
+        # self.right_finger.draw(self.screen)
 
-        self.ball.draw(screen)
+        self.ball.draw(self.screen)
+
+    def get_collision_time(self, ball, finger, t):
+        t0 = 0
+        t1 = t
+        ball0 = ball
+        finger0 = finger
+        while t1 - t0 > 0.0001:
+            ## at t0 => not collidingzz
+            ## at t1 => colliding
+            mid = (t0 + t1) / 2
+            ball = ball0.at(mid)
+            finger = finger0.at(mid)
+            if finger.collides(ball):
+                t1 = mid
+            else:
+                t0 = mid
+        return mid
 
     def simulate_physics(self):
+        dt = 1.0
         for i in xrange(10):
-            self.ball.apply_gravity()
-            self.left_finger.update_move()
-            self.right_finger.update_move()
-            self.ball.apply_colissions(
-                self.segments +
-                self.left_finger.segments() +
-                self.right_finger.segments())
+            # assert(not self.left_finger.collides(self.ball))
+            ball_next = self.ball.at(dt)
+            lfingernext = self.left_finger.at(dt)
+            #
+            if lfingernext.collides(ball_next):
+                collision_time = self.get_collision_time(
+                    self.ball, self.left_finger, dt)
+                ball_next = self.ball.at(collision_time)
+                lfingernext = self.left_finger.at(collision_time)
+                ball_next = lfingernext.impact_on(ball_next)
+
+            self.left_finger = lfingernext
+            self.ball = ball_next
+
+            self.ball.apply_colissions_to_segments(self.segments)
 
     def game_loop(self):
         while True:
             self.process_events()
             self.simulate_physics()
-            self.draw(self.screen)
+            self.draw()
             pygame.display.flip()
 
             self.clock.tick(self.FPS)

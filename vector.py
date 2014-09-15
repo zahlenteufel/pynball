@@ -35,9 +35,15 @@ class Vector:
     def length(self):
         return math.hypot(self.x, self.y)
 
+    def projected_length(self, v):
+        return (v * self) / self.length()
+
     def normalized(self):
         l = self.length()
         return Vector(self.x / l, self.y / l)
+
+    def normal(self):
+        return Vector(-self.y, self.x).normalized()
 
     def __str__(self):
         return "(" + str(self.x) + ", " + str(self.y) + ")"

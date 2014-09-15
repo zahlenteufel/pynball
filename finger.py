@@ -2,6 +2,7 @@ from vector import Vector
 from segment import Segment
 from draw import draw_circle
 import math
+import copy
 
 
 class Finger:
@@ -15,15 +16,34 @@ class Finger:
         self.color = color
         self.triggered = False
 
-    def update_move(self):
+    def angle_at(self, t):
         if self.triggered:
-            self.angle += math.pi / 100
-            if self.angle > self.max_angle:
-                self.angle = self.max_angle
+            angle = self.angle + t * math.pi / 100
+            if angle > self.max_angle:
+                angle = self.max_angle
         else:
-            self.angle -= math.pi / 200
-            if self.angle < self.min_angle:
-                self.angle = self.min_angle
+            angle = self.angle - t * math.pi / 200
+            if angle < self.min_angle:
+                angle = self.min_angle
+        return angle
+
+    def at(self, t):
+        angle = self.angle_at(t)
+        res = copy.copy(self)
+        res.angle = angle
+        return res
+
+    def impact_on(self, ball):
+        newball = copy.copy(ball)
+        # mysegm = (self.extreme() - self.pivot)
+        # distance_to_pivot = mysegm.projected_length(ball.center)
+        # assume touched upper segment
+        upseg = self.upper_segment()
+        newball.velocity = \
+            upseg.direction.reflect(newball.velocity) * 0.8
+            #  + \
+            # upseg.direction.normal() * distance_to_pivot * 0.01
+        return newball
 
     def push(self):
         self.triggered = True
@@ -58,6 +78,24 @@ class Finger:
         draw_circle(screen, self.color, self.pivot, 8)
         draw_circle(screen, self.color, self.extreme(), 5)
 
+    def collides(self, ball):
+        d1 = (ball.center - self.pivot).length()
+        d2 = (ball.center - self.extreme()).length()
+        if d1 <= ball.radius + 8:
+            return True
+        if d2 <= ball.radius + 5:
+            return True
+        for segment in self.segments():
+            if ball.collides_segment(segment):
+                return True
+        return False
+
+    # def is_ball_inside(self, ball):
+    #     upseg = self.upper_segment()
+    #     lowseg = self.lower_segment()
+    #     sg1 = (ball.center - upseg.p1) * upseg.normal()
+    #     sg2 = (ball.center - lowseg.p1) * lowseg.normal()
+    #     return sg1 * sg2 < 0
 
 class LeftFinger(Finger):
 

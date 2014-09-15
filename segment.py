@@ -8,8 +8,8 @@ class Segment:
         self.p1 = p1
         self.p2 = p2
         self.diff = p2 - p1
-        self.dlength = self.diff.length()
-        self.ddir = self.diff.normalized()
+        self.length = self.diff.length()
+        self.direction = self.diff.normalized()
         self.color = color
 
     def draw(self, screen):
@@ -20,26 +20,26 @@ class Segment:
             self.p2.tuple(), 1)
 
     def normal(self):
-        return Vector(-self.ddir.y, self.ddir.x)
+        return Vector(-self.direction.y, self.direction.x)
 
     def closest_point(self, point):
         plength = self.projected_length(point)
         if plength <= 0:
             return self.p1
-        elif plength >= self.dlength:
+        elif plength >= self.length:
             return self.p2
         else:
-            return self.p1 + self.ddir * plength
+            return self.p1 + self.direction * plength
 
     def is_extreme(self, point):
         return point == self.p1 or point == self.p2
 
     def projected_length(self, point):
-        return (point - self.p1) * self.ddir
+        return (point - self.p1) * self.direction
 
     def project(self, point):
         plength = self.projected_length(point)
-        if 0 <= plength <= self.dlength:
-            return self.p1 + self.ddir * plength
+        if 0 <= plength <= self.length:
+            return self.p1 + self.direction * plength
         else:
             return None
