@@ -5,6 +5,10 @@ import math
 import copy
 
 
+def clamp(value, minv, maxv):
+    return max(minv, min(maxv, value))
+
+
 class Finger:
 
     def __init__(self, pivot, length, min_angle, max_angle, color):
@@ -14,42 +18,39 @@ class Finger:
         self.angle = self.min_angle
         self.max_angle = max_angle
         self.color = color
-        self.triggered = False
+        self.angular_velocity = 0
 
     def angle_at(self, t):
-        if self.triggered:
-            angle = self.angle + t * math.pi / 100
-            if angle > self.max_angle:
-                angle = self.max_angle
-        else:
-            angle = self.angle - t * math.pi / 200
-            if angle < self.min_angle:
-                angle = self.min_angle
-        return angle
+        angle = self.angle + self.angular_velocity
+        return clamp(angle, self.min_angle, self.max_angle)
 
     def at(self, t):
         angle = self.angle_at(t)
         res = copy.copy(self)
         res.angle = angle
+        if res.angle in (self.min_angle, self.max_angle):
+            res.angular_velocity = 0
         return res
 
     def impact_on(self, ball):
         newball = copy.copy(ball)
-        # mysegm = (self.extreme() - self.pivot)
-        # distance_to_pivot = mysegm.projected_length(ball.center)
+        mysegm = (self.extreme() - self.pivot)
+        distance_to_pivot = mysegm.projected_length(ball.center)
         # assume touched upper segment
         upseg = self.upper_segment()
         newball.velocity = \
-            upseg.direction.reflect(newball.velocity) * 0.8
-            #  + \
-            # upseg.direction.normal() * distance_to_pivot * 0.01
+            upseg.direction.reflect(newball.velocity) * 0.8 + \
+            upseg.direction.normal() * self.angular_velocity * \
+            distance_to_pivot * 0.5
+        # if ball is moving against finger...
+
         return newball
 
     def push(self):
-        self.triggered = True
+        self.angular_velocity = math.pi / 100
 
     def release(self):
-        self.triggered = False
+        self.angular_velocity = -math.pi / 200
 
     def upper_segment(self):
         angle1 = self.perpendicular_angle()
@@ -96,6 +97,7 @@ class Finger:
     #     sg1 = (ball.center - upseg.p1) * upseg.normal()
     #     sg2 = (ball.center - lowseg.p1) * lowseg.normal()
     #     return sg1 * sg2 < 0
+
 
 class LeftFinger(Finger):
 

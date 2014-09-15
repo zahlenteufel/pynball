@@ -125,8 +125,10 @@ class Pynball:
                 collision_time = self.get_collision_time(
                     self.ball, self.left_finger, dt)
                 ball_next = self.ball.at(collision_time)
-                lfingernext = self.left_finger.at(collision_time)
-                ball_next = lfingernext.impact_on(ball_next)
+                lfingercollision = self.left_finger.at(collision_time)
+                ball_next = lfingercollision.impact_on(ball_next)
+                ball_next = ball_next.at(dt - collision_time)
+                lfingernext = self.left_finger.at(dt)
 
             self.left_finger = lfingernext
             self.ball = ball_next
