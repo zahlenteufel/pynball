@@ -1,5 +1,5 @@
-import pygame
 from vector import Vector
+from draw import draw_line
 
 
 class Segment:
@@ -13,11 +13,7 @@ class Segment:
         self.color = color
 
     def draw(self, screen):
-        pygame.draw.line(
-            screen,
-            self.color,
-            self.p1.tuple(),
-            self.p2.tuple(), 1)
+        draw_line(screen, self.p1, self.p2, self.color)
 
     def normal(self):
         return Vector(-self.direction.y, self.direction.x)
@@ -43,3 +39,19 @@ class Segment:
             return self.p1 + self.direction * plength
         else:
             return None
+
+
+def segments_from_rectangle(x, y, w, h, color):
+    corners = \
+        [
+            Vector(x, y),
+            Vector(x + w, y),
+            Vector(x + w, y + h),
+            Vector(x, y + h)
+        ]
+    return [
+        Segment(corners[0], corners[1], color),
+        Segment(corners[1], corners[2], color),
+        Segment(corners[2], corners[3], color),
+        Segment(corners[3], corners[0], color)
+    ]

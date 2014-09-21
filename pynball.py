@@ -2,7 +2,7 @@ import pygame
 import sys
 import levels
 from vector import Vector
-from segment import Segment
+from segment import Segment, segments_from_rectangle
 from ball import Ball
 from finger import LeftFinger
 #RightFinger
@@ -11,22 +11,6 @@ BLACK = (0, 0, 0)
 DARK_GREEN = (128, 255, 0)
 RED = (255, 0, 0)
 YELLOW = (255, 255, 0)
-
-
-def segments_from_rectangle(x, y, w, h, color):
-    corners = \
-        [
-            Vector(x, y),
-            Vector(x + w, y),
-            Vector(x + w, y + h),
-            Vector(x, y + h)
-        ]
-    return [
-        Segment(corners[0], corners[1], color),
-        Segment(corners[1], corners[2], color),
-        Segment(corners[2], corners[3], color),
-        Segment(corners[3], corners[0], color)
-    ]
 
 
 class Pynball:

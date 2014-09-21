@@ -43,7 +43,7 @@ class Vector:
         return Vector(-self.y, self.x).normalized()
 
     def __str__(self):
-        return "(" + str(self.x) + ", " + str(self.y) + ")"
+        return "[" + str(self.x) + ", " + str(self.y) + "]"
 
     def reflect(self, other):
         assert abs(self.length() - 1.) < 0.00001

@@ -1,6 +1,6 @@
 from vector import Vector
 from segment import Segment
-from draw import draw_circle
+from draw import draw_circle, draw_line
 import math
 import copy
 
@@ -69,7 +69,7 @@ class Finger:
     def upper_segment(self):
         angle1 = self.perpendicular_angle()
         pivot_upper = self.pivot + self.angular_vector(angle1, self.r1)
-        extreme_upper = self.extreme() + self.angular_vector(angle1, self.r1)
+        extreme_upper = self.extreme() + self.angular_vector(angle1, self.r2)
         return Segment(pivot_upper, extreme_upper, self.color)
 
     def lower_segment(self):
@@ -91,13 +91,19 @@ class Finger:
         for segment in self.segments():
             segment.draw(screen)
         draw_circle(screen, self.color, self.pivot, self.r1)
-        draw_circle(screen, self.color, self.extreme(), self.r2)
+        draw_line(
+            screen,
+            self.pivot,
+            self.extreme(),
+            self.color
+        )
+        draw_circle(screen, (0, 255, 0), self.extreme(), self.r2)
 
     def collides_with_pivot(self, ball):
         return (ball.center - self.pivot).length() < ball.radius + self.r1
 
     def collides_with_extreme(self, ball):
-        return (ball.center - self.extreme()).length() < ball.radius + self.r1
+        return (ball.center - self.extreme()).length() < ball.radius + self.r2
 
     def collides_with_lower_segment(self, ball):
         return ball.collides_segment(self.lower_segment())
@@ -111,13 +117,6 @@ class Finger:
             self.collides_with_extreme(ball) or \
             self.collides_with_upper_segment(ball) or \
             self.collides_with_lower_segment(ball)
-
-    # def is_ball_inside(self, ball):
-    #     upseg = self.upper_segment()
-    #     lowseg = self.lower_segment()
-    #     sg1 = (ball.center - upseg.p1) * upseg.normal()
-    #     sg2 = (ball.center - lowseg.p1) * lowseg.normal()
-    #     return sg1 * sg2 < 0
 
 
 class LeftFinger(Finger):

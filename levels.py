@@ -45,7 +45,7 @@ debug_left_finger = {
         {
             'type': 'L',
             'r1': 100,
-            'r2': 50,
+            'r2': 30,
             'pivot': (100, 200),
             'length': 200,
             'min_angle': -math.pi / 4,
