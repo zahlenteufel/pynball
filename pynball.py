@@ -4,7 +4,8 @@ import levels
 from vector import Vector
 from segment import Segment
 from ball import Ball
-from finger import LeftFinger, RightFinger
+from finger import LeftFinger
+#RightFinger
 
 BLACK = (0, 0, 0)
 DARK_GREEN = (128, 255, 0)
@@ -59,25 +60,27 @@ class Pynball:
             )
 
         lfinger = level['fingers'][0]  # just for now..
-        rfinger = level['fingers'][1]
+        #rfinger = level['fingers'][1]
 
         self.left_finger = \
             LeftFinger(
                 Vector(*lfinger['pivot']),
+                lfinger['r1'],
+                lfinger['r2'],
                 lfinger['length'],
                 lfinger['min_angle'],
                 lfinger['max_angle'],
                 lfinger['color']
             )
 
-        self.right_finger = \
-            RightFinger(
-                Vector(*rfinger['pivot']),
-                rfinger['length'],
-                rfinger['min_angle'],
-                rfinger['max_angle'],
-                rfinger['color']
-            )
+        # self.right_finger = \
+        #     RightFinger(
+        #         Vector(*rfinger['pivot']),
+        #         rfinger['length'],
+        #         rfinger['min_angle'],
+        #         rfinger['max_angle'],
+        #         rfinger['color']
+        #     )
 
         self.ball = Ball(
             Vector(*level['ball']['position']),
@@ -174,4 +177,4 @@ class Pynball:
 
 
 if __name__ == "__main__":
-    pynball = Pynball(levels.standard)
+    pynball = Pynball(levels.debug_left_finger)

@@ -31,3 +31,26 @@ standard = {
         }
     ]
 }
+
+debug_left_finger = {
+    'size': {'width': 500, 'height': 500},
+    'ball': {
+        'radius': 30,
+        'position': (200, 100),
+        'velocity': (0, 0)
+    },
+    'gravity': 0,
+    'obstacles': [],
+    'fingers': [
+        {
+            'type': 'L',
+            'r1': 100,
+            'r2': 50,
+            'pivot': (100, 200),
+            'length': 200,
+            'min_angle': -math.pi / 4,
+            'max_angle': math.pi / 4,
+            'color': (255, 0, 0)
+        }
+    ]
+}

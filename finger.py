@@ -11,8 +11,10 @@ def clamp(value, minv, maxv):
 
 class Finger:
 
-    def __init__(self, pivot, length, min_angle, max_angle, color):
+    def __init__(self, pivot, r1, r2, length, min_angle, max_angle, color):
         self.pivot = pivot
+        self.r1 = r1
+        self.r2 = r2
         self.length = length
         self.min_angle = min_angle
         self.angle = self.min_angle
@@ -66,14 +68,14 @@ class Finger:
 
     def upper_segment(self):
         angle1 = self.perpendicular_angle()
-        pivot_upper = self.pivot + self.angular_vector(angle1, 8)
-        extreme_upper = self.extreme() + self.angular_vector(angle1, 5)
+        pivot_upper = self.pivot + self.angular_vector(angle1, self.r1)
+        extreme_upper = self.extreme() + self.angular_vector(angle1, self.r1)
         return Segment(pivot_upper, extreme_upper, self.color)
 
     def lower_segment(self):
         angle2 = self.perpendicular_angle() + math.pi
-        pivot_lower = self.pivot + self.angular_vector(angle2, 8)
-        extreme_lower = self.extreme() + self.angular_vector(angle2, 5)
+        pivot_lower = self.pivot + self.angular_vector(angle2, self.r1)
+        extreme_lower = self.extreme() + self.angular_vector(angle2, self.r2)
         return Segment(pivot_lower, extreme_lower, self.color)
 
     def segments(self):
@@ -88,14 +90,14 @@ class Finger:
     def draw(self, screen):
         for segment in self.segments():
             segment.draw(screen)
-        draw_circle(screen, self.color, self.pivot, 8)
-        draw_circle(screen, self.color, self.extreme(), 5)
+        draw_circle(screen, self.color, self.pivot, self.r1)
+        draw_circle(screen, self.color, self.extreme(), self.r2)
 
     def collides_with_pivot(self, ball):
-        return (ball.center - self.pivot).length() < ball.radius + 8
+        return (ball.center - self.pivot).length() < ball.radius + self.r1
 
     def collides_with_extreme(self, ball):
-        return (ball.center - self.extreme()).length() < ball.radius + 8
+        return (ball.center - self.extreme()).length() < ball.radius + self.r1
 
     def collides_with_lower_segment(self, ball):
         return ball.collides_segment(self.lower_segment())
