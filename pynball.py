@@ -1,6 +1,6 @@
 import pygame
 import sys
-import math
+import levels
 from vector import Vector
 from segment import Segment
 from ball import Ball
@@ -30,38 +30,60 @@ def segments_from_rectangle(x, y, w, h, color):
 
 class Pynball:
 
-    WIDTH = 400
-    HEIGHT = 600
     FPS = 40
 
-    def __init__(self):
+    def __init__(self, level):
+        self.load_level(level)
         pygame.init()
-
-        self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT), 0, 32)
+        self.screen = pygame.display.set_mode((self.width, self.height), 0, 32)
         self.clock = pygame.time.Clock()
+        pygame.display.set_caption("Pynball")
+        self.game_loop()
+
+    def load_level(self, level):
+        self.width = level['size']['width']
+        self.height = level['size']['height']
 
         exterior_walls = segments_from_rectangle(
-            -1, -1, self.WIDTH + 2, self.HEIGHT + 2, DARK_GREEN)
+            -1, -1, self.width + 2, self.height + 2, DARK_GREEN)
 
-        obstacles = \
-            [
-                Segment(Vector(50, 450), Vector(140, 530), DARK_GREEN),
-                Segment(Vector(260, 530), Vector(320, 475), DARK_GREEN)
-            ]
+        self.segments = exterior_walls
 
-        self.segments = exterior_walls + obstacles
+        for obstacle in level['obstacles']:
+            self.segments.append(
+                Segment(
+                    Vector(*obstacle['from']),
+                    Vector(*obstacle['to']),
+                    DARK_GREEN
+                )
+            )
 
-        self.left_finger = LeftFinger(
-            Vector(140, 540), 40, -math.pi / 4, math.pi / 4, RED)
+        lfinger = level['fingers'][0]  # just for now..
+        rfinger = level['fingers'][1]
 
-        self.right_finger = RightFinger(
-            Vector(260, 540), 40, -math.pi / 4, math.pi / 4, YELLOW)
+        self.left_finger = \
+            LeftFinger(
+                Vector(*lfinger['pivot']),
+                lfinger['length'],
+                lfinger['min_angle'],
+                lfinger['max_angle'],
+                lfinger['color']
+            )
 
-        self.ball = Ball(Vector(160, 520), 10, Vector(0, 0))
+        self.right_finger = \
+            RightFinger(
+                Vector(*rfinger['pivot']),
+                rfinger['length'],
+                rfinger['min_angle'],
+                rfinger['max_angle'],
+                rfinger['color']
+            )
 
-        pygame.display.set_caption("Pynball")
-
-        self.game_loop()
+        self.ball = Ball(
+            Vector(*level['ball']['position']),
+            level['ball']['radius'],
+            Vector(*level['ball']['velocity'])
+        )
 
     def should_quit(self, event):
         return event.type == pygame.QUIT or \
@@ -152,4 +174,4 @@ class Pynball:
 
 
 if __name__ == "__main__":
-    pynball = Pynball()
+    pynball = Pynball(levels.standard)
