@@ -98,13 +98,14 @@ class Pynball:
     def draw(self):
         self.screen.fill(BLACK)
 
-        for segment in self.segments:
-            segment.draw(self.screen)
+        # for segment in self.segments:
+        #     segment.draw(self.screen)
 
         self.left_finger.draw(self.screen)
-        # self.right_finger.draw(self.screen)
+        # # self.right_finger.draw(self.screen)
 
-        self.ball.draw(self.screen)
+        # self.ball.draw(self.screen)
+        pygame.display.flip()
 
     def get_collision_time(self, ball, finger, t):
         if self.left_finger.collides(self.ball):
@@ -155,9 +156,10 @@ class Pynball:
             self.process_events()
             self.simulate_physics()
             self.draw()
-            pygame.display.flip()
 
             self.clock.tick(self.FPS)
+            pygame.time.wait(3000)
+            break
 
 
 if __name__ == "__main__":

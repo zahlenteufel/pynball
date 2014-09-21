@@ -1,3 +1,4 @@
+from __future__ import division
 from vector import Vector
 from segment import Segment
 from draw import draw_circle, draw_line
@@ -12,6 +13,7 @@ def clamp(value, minv, maxv):
 class Finger:
 
     def __init__(self, pivot, r1, r2, length, min_angle, max_angle, color):
+        assert(r1 >= r2)
         self.pivot = pivot
         self.r1 = r1
         self.r2 = r2
@@ -67,15 +69,15 @@ class Finger:
         self.angular_velocity = -math.pi / 200
 
     def upper_segment(self):
-        angle1 = self.perpendicular_angle()
-        pivot_upper = self.pivot + self.angular_vector(angle1, self.r1)
-        extreme_upper = self.extreme() + self.angular_vector(angle1, self.r2)
+        angle = self.angle + math.acos((self.r1 - self.r2) / self.length)
+        pivot_upper = self.pivot + self.angular_vector(angle, self.r1)
+        extreme_upper = self.extreme() + self.angular_vector(angle, self.r2)
         return Segment(pivot_upper, extreme_upper, self.color)
 
     def lower_segment(self):
-        angle2 = self.perpendicular_angle() + math.pi
-        pivot_lower = self.pivot + self.angular_vector(angle2, self.r1)
-        extreme_lower = self.extreme() + self.angular_vector(angle2, self.r2)
+        angle = self.angle - math.acos((self.r1 - self.r2) / self.length)
+        pivot_lower = self.pivot + self.angular_vector(angle, self.r1)
+        extreme_lower = self.extreme() + self.angular_vector(angle, self.r2)
         return Segment(pivot_lower, extreme_lower, self.color)
 
     def segments(self):
