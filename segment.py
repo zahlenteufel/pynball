@@ -17,7 +17,7 @@ class Segment:
         draw_arrow(screen, (self.p1 + self.p2) * 0.5, (self.p1 + self.p2) * 0.5 + self.normal() * 10)
 
     def normal(self):
-        return Vector(-self.direction.y, self.direction.x)
+        return Vector(self.direction.y, -self.direction.x)
 
     def closest_point(self, point):
         plength = self.projected_length(point)

@@ -82,22 +82,10 @@ class Finger:
         return nextball
 
     def push(self):
-        self.angular_velocity = math.pi / 200
+        self.angular_velocity = math.pi / 75
 
     def release(self):
-        self.angular_velocity = -math.pi / 100
-
-    def upper_segment(self):
-        angle = self.angle + math.acos((self.r1 - self.r2) / self.length)
-        pivot_upper = self.pivot + self.angular_vector(angle, self.r1)
-        extreme_upper = self.extreme() + self.angular_vector(angle, self.r2)
-        return Segment(extreme_upper, pivot_upper, self.color)
-
-    def lower_segment(self):
-        angle = self.angle - math.acos((self.r1 - self.r2) / self.length)
-        pivot_lower = self.pivot + self.angular_vector(angle, self.r1)
-        extreme_lower = self.extreme() + self.angular_vector(angle, self.r2)
-        return Segment(pivot_lower, extreme_lower, self.color)
+        self.angular_velocity = -math.pi / 30
 
     def segments(self):
         return [self.upper_segment(), self.lower_segment()]
@@ -109,7 +97,7 @@ class Finger:
         for segment in self.segments():
             segment.draw(screen)
         draw_circle(screen, self.color, self.pivot, self.r1)
-        draw_circle(screen, (0, 255, 0), self.extreme(), self.r2)
+        draw_circle(screen, self.color, self.extreme(), self.r2)
 
     def collides_with_pivot(self, ball):
         return (ball.center - self.pivot).length() < ball.radius + self.r1
@@ -136,8 +124,33 @@ class LeftFinger(Finger):
     def angular_vector(self, angle, length):
         return Vector(math.cos(angle), -math.sin(angle)) * length
 
+    def upper_segment(self):
+        angle = self.angle + math.acos((self.r1 - self.r2) / self.length)
+        pivot_upper = self.pivot + self.angular_vector(angle, self.r1)
+        extreme_upper = self.extreme() + self.angular_vector(angle, self.r2)
+        return Segment(pivot_upper, extreme_upper, self.color)
+
+    def lower_segment(self):
+        angle = self.angle - math.acos((self.r1 - self.r2) / self.length)
+        pivot_lower = self.pivot + self.angular_vector(angle, self.r1)
+        extreme_lower = self.extreme() + self.angular_vector(angle, self.r2)
+        return Segment(extreme_lower, pivot_lower, self.color)
+
 
 class RightFinger(Finger):
 
     def angular_vector(self, angle, length):
         return Vector(-math.cos(angle), -math.sin(angle)) * length
+
+    def upper_segment(self):
+        angle = self.angle + math.acos((self.r1 - self.r2) / self.length)
+        pivot_upper = self.pivot + self.angular_vector(angle, self.r1)
+        extreme_upper = self.extreme() + self.angular_vector(angle, self.r2)
+        return Segment(extreme_upper, pivot_upper, self.color)
+
+    def lower_segment(self):
+        angle = self.angle - math.acos((self.r1 - self.r2) / self.length)
+        pivot_lower = self.pivot + self.angular_vector(angle, self.r1)
+        extreme_lower = self.extreme() + self.angular_vector(angle, self.r2)
+        return Segment(pivot_lower, extreme_lower, self.color)
+    

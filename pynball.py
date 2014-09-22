@@ -4,8 +4,7 @@ import levels
 from vector import Vector
 from segment import Segment, segments_from_rectangle
 from ball import Ball
-from finger import LeftFinger
-#RightFinger
+from finger import LeftFinger, RightFinger
 
 BLACK = (0, 0, 0)
 DARK_GREEN = (128, 255, 0)
@@ -15,7 +14,7 @@ YELLOW = (255, 255, 0)
 
 class Pynball:
 
-    FPS = 25
+    FPS = 40
 
     def __init__(self, level):
         self.load_level(level)
@@ -44,7 +43,7 @@ class Pynball:
             )
 
         lfinger = level['fingers'][0]  # just for now..
-        #rfinger = level['fingers'][1]
+        rfinger = level['fingers'][1]
 
         self.left_finger = \
             LeftFinger(
@@ -57,14 +56,16 @@ class Pynball:
                 lfinger['color']
             )
 
-        # self.right_finger = \
-        #     RightFinger(
-        #         Vector(*rfinger['pivot']),
-        #         rfinger['length'],
-        #         rfinger['min_angle'],
-        #         rfinger['max_angle'],
-        #         rfinger['color']
-        #     )
+        self.right_finger = \
+            RightFinger(
+                Vector(*rfinger['pivot']),
+                rfinger['r1'],
+                rfinger['r2'],
+                rfinger['length'],
+                rfinger['min_angle'],
+                rfinger['max_angle'],
+                rfinger['color']
+            )
 
         self.ball = Ball(
             Vector(*level['ball']['position']),
@@ -99,23 +100,23 @@ class Pynball:
     def draw(self):
         self.screen.fill(BLACK)
 
-        # for segment in self.segments:
-        #     segment.draw(self.screen)
+        for segment in self.segments:
+            segment.draw(self.screen)
 
         self.left_finger.draw(self.screen)
-        # # self.right_finger.draw(self.screen)
+        self.right_finger.draw(self.screen)
 
         self.ball.draw(self.screen)
         pygame.display.flip()
 
     def get_collision_time(self, ball, finger, t):
-        if self.left_finger.collides(self.ball):
+        if finger.collides(ball):
             return 0
         t0 = 0
         t1 = t
         ball0 = ball
         finger0 = finger
-        while t1 - t0 > 0.001:
+        while t1 - t0 > 0.0001:
             ## at t0 => not colliding
             ## at t1 => colliding
             mid = (t0 + t1) / 2
@@ -131,24 +132,33 @@ class Pynball:
 
     def simulate_physics(self):
         dt = 1.0
-        for i in xrange(8):
-            # assert(not self.left_finger.collides(self.ball))
+        for i in xrange(10):
             ball_next = self.ball.at(dt)
             lfingernext = self.left_finger.at(dt)
             #
             if lfingernext.collides(ball_next):
-                # print "begin collision"
                 collision_time = self.get_collision_time(
                     self.ball, self.left_finger, dt)
                 ball_next = self.ball.at(collision_time)
                 lfingercollision = self.left_finger.at(collision_time)
                 remaining_time = dt - collision_time
                 ball_next = lfingercollision.impact_on(ball_next, remaining_time)
-                # ball_next = ball_next.at(remaining_time)
                 lfingernext = self.left_finger.at(dt)
-                # print "end collision"
 
             self.left_finger = lfingernext
+            self.ball = ball_next
+
+            rfingernext = self.right_finger.at(dt)
+            #
+            if rfingernext.collides(ball_next):
+                collision_time = self.get_collision_time(
+                    self.ball, self.right_finger, dt)
+                ball_next = self.ball.at(collision_time)
+                rfingercollision = self.right_finger.at(collision_time)
+                remaining_time = dt - collision_time
+                ball_next = rfingercollision.impact_on(ball_next, remaining_time)
+                rfingernext = self.right_finger.at(dt)
+            self.right_finger = rfingernext
             self.ball = ball_next
 
             self.ball.apply_colissions_to_segments(self.segments)
@@ -163,4 +173,4 @@ class Pynball:
 
 
 if __name__ == "__main__":
-    pynball = Pynball(levels.debug_left_finger)
+    pynball = Pynball(levels.standard)
