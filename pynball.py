@@ -15,7 +15,7 @@ YELLOW = (255, 255, 0)
 
 class Pynball:
 
-    FPS = 40
+    FPS = 25
 
     def __init__(self, level):
         self.load_level(level)
@@ -94,6 +94,7 @@ class Pynball:
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 pos = pygame.mouse.get_pos()
                 self.ball.center = Vector(*pos)
+                self.ball.velocity = Vector(0, 0)
 
     def draw(self):
         self.screen.fill(BLACK)
@@ -104,7 +105,7 @@ class Pynball:
         self.left_finger.draw(self.screen)
         # # self.right_finger.draw(self.screen)
 
-        # self.ball.draw(self.screen)
+        self.ball.draw(self.screen)
         pygame.display.flip()
 
     def get_collision_time(self, ball, finger, t):
@@ -114,7 +115,7 @@ class Pynball:
         t1 = t
         ball0 = ball
         finger0 = finger
-        while t1 - t0 > 0.0001:
+        while t1 - t0 > 0.001:
             ## at t0 => not colliding
             ## at t1 => colliding
             mid = (t0 + t1) / 2
@@ -130,7 +131,7 @@ class Pynball:
 
     def simulate_physics(self):
         dt = 1.0
-        for i in xrange(10):
+        for i in xrange(8):
             # assert(not self.left_finger.collides(self.ball))
             ball_next = self.ball.at(dt)
             lfingernext = self.left_finger.at(dt)
@@ -141,8 +142,9 @@ class Pynball:
                     self.ball, self.left_finger, dt)
                 ball_next = self.ball.at(collision_time)
                 lfingercollision = self.left_finger.at(collision_time)
-                ball_next = lfingercollision.impact_on(ball_next)
-                ball_next = ball_next.at(dt - collision_time)
+                remaining_time = dt - collision_time
+                ball_next = lfingercollision.impact_on(ball_next, remaining_time)
+                # ball_next = ball_next.at(remaining_time)
                 lfingernext = self.left_finger.at(dt)
                 # print "end collision"
 
@@ -158,8 +160,6 @@ class Pynball:
             self.draw()
 
             self.clock.tick(self.FPS)
-            pygame.time.wait(3000)
-            break
 
 
 if __name__ == "__main__":

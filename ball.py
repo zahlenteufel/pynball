@@ -1,7 +1,7 @@
 from vector import Vector, distance
 from draw import draw_circle
 
-GRAVITY_ACC = Vector(0, 0)
+GRAVITY_ACC = Vector(0, 0.08)
 #Vector(0, 0.002)
 
 

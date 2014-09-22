@@ -23,6 +23,14 @@ class Vector:
         else:
             return Vector(self.x * other, self.y * other)
 
+    def rotate_around(self, center, angle):
+        t = self - center
+        return center + \
+            Vector(
+                t.x * math.cos(angle) - t.y * math.sin(angle),
+                t.x * math.sin(angle) + t.y * math.cos(angle)
+            )
+
     def int(self):
         return Vector(int(self.x), int(self.y))
 

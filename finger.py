@@ -1,7 +1,7 @@
 from __future__ import division
 from vector import Vector
 from segment import Segment
-from draw import draw_circle, draw_line
+from draw import draw_circle
 import math
 import copy
 
@@ -36,11 +36,8 @@ class Finger:
             res.angular_velocity = 0
         return res
 
-    def impact_on(self, ball):
-        newball = copy.deepcopy(ball)
-        mysegm = (self.extreme() - self.pivot)
-        distance_to_pivot = mysegm.projected_length(ball.center)
-        # assume touched upper segment
+    def impact_on(self, ball, remaining_time):
+        newball = ball.at(0)
         if self.collides_with_upper_segment(ball):
             normal = self.upper_segment().direction.normal()
         elif self.collides_with_lower_segment(ball):
@@ -54,25 +51,47 @@ class Finger:
 
         ref = normal.normal()
 
-        newball.velocity = \
-            ref.reflect(newball.velocity) * 0.8 + \
-            normal * self.angular_velocity * distance_to_pivot * 0.8
+        # find the factor such that in the next iteraction they wont collide..
 
-        # if ball is moving against finger...
+        newball.velocity = ref.reflect(newball.velocity) * 0.8
 
-        return newball
+        nextball = newball.at(remaining_time)
+        nextfinger = self.at(remaining_time)
+
+        if nextfinger.collides(nextball):
+            fL = 0
+            fR = 100
+            nball = nextball.at(0)
+            nball.velocity += normal * fR
+            nball = nball.at(remaining_time)
+            assert(not nextfinger.collides(nball))
+            while fR - fL > 0.001:
+                fmid = (fL + fR) / 2
+                nball = nextball.at(0)
+                nball.velocity += normal * fmid
+                nball = nball.at(remaining_time)
+                if nextfinger.collides(nball):
+                    fL = fmid
+                else:
+                    fR = fmid
+            nextball.velocity += normal * fR
+            nextball = nextball.at(remaining_time)
+
+        # assert the ball and the finger are not colliding at +time_remaining
+
+        return nextball
 
     def push(self):
-        self.angular_velocity = math.pi / 100
+        self.angular_velocity = math.pi / 200
 
     def release(self):
-        self.angular_velocity = -math.pi / 200
+        self.angular_velocity = -math.pi / 100
 
     def upper_segment(self):
         angle = self.angle + math.acos((self.r1 - self.r2) / self.length)
         pivot_upper = self.pivot + self.angular_vector(angle, self.r1)
         extreme_upper = self.extreme() + self.angular_vector(angle, self.r2)
-        return Segment(pivot_upper, extreme_upper, self.color)
+        return Segment(extreme_upper, pivot_upper, self.color)
 
     def lower_segment(self):
         angle = self.angle - math.acos((self.r1 - self.r2) / self.length)
@@ -86,19 +105,10 @@ class Finger:
     def extreme(self):
         return self.pivot + self.angular_vector(self.angle, self.length)
 
-    def perpendicular_angle(self):
-        return self.angle + math.pi / 2
-
     def draw(self, screen):
         for segment in self.segments():
             segment.draw(screen)
         draw_circle(screen, self.color, self.pivot, self.r1)
-        draw_line(
-            screen,
-            self.pivot,
-            self.extreme(),
-            self.color
-        )
         draw_circle(screen, (0, 255, 0), self.extreme(), self.r2)
 
     def collides_with_pivot(self, ball):

@@ -44,12 +44,12 @@ debug_left_finger = {
     'fingers': [
         {
             'type': 'L',
-            'r1': 100,
-            'r2': 50,
-            'pivot': (100, 200),
-            'length': 160,
-            'min_angle': 0,  # -math.pi / 4,
-            'max_angle': 0,  # math.pi / 4,
+            'r1': 50,
+            'r2': 20,
+            'pivot': (50, 250),
+            'length': 300,
+            'min_angle': -math.pi / 6,
+            'max_angle': math.pi / 6,
             'color': (255, 0, 0)
         }
     ]

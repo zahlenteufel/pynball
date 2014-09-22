@@ -1,5 +1,5 @@
 from vector import Vector
-from draw import draw_line
+from draw import draw_line, draw_arrow
 
 
 class Segment:
@@ -14,6 +14,7 @@ class Segment:
 
     def draw(self, screen):
         draw_line(screen, self.p1, self.p2, self.color)
+        draw_arrow(screen, (self.p1 + self.p2) * 0.5, (self.p1 + self.p2) * 0.5 + self.normal() * 10)
 
     def normal(self):
         return Vector(-self.direction.y, self.direction.x)
